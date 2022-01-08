@@ -1,22 +1,14 @@
-=== GS JWT Authentication for WP REST API ===
-Contributors: gauravin213
-Tags: wp-json, jwt, json web authentication, wp-api, otp
-Requires at least: 4.2
-Tested up to: 5.8.3
-Requires PHP: 5.3.0
-Stable tag: 1.0.0
-License: GPLv2 or later
-License URI: http://www.gnu.org/licenses/gpl-2.0.html
+###  GS JWT Authentication for WP REST API
 
 
-== Description ==
+
+###  Description 
 
 Extends the WP REST API using JSON Web Tokens Authentication as an authentication method.
 GS JWT plugin provides to encode and decode JSON Web Tokens (JWT), conforming to RFC 7519.
 
 GET OTP and send notification by mail or SMS service 
 
-**Support and Requests please in Github:** https://github.com/gauravin213/gs-jwt
 
 ### REQUIREMENTS
 
@@ -103,7 +95,7 @@ Endpoint | HTTP Verb
 		"mobile": "enter mobile number"
 	}
 
-####Sample add SMS and email notification
+#### Sample add SMS and email notification
 	
 	/*
 	* Send notification 

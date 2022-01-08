@@ -219,7 +219,7 @@ function gs_wp_jwt_otp_endpoint_handler($request = null){
     update_user_meta($user_id, '_gs_jwt_fs_otp_exp', date("Y-m-d h:i:s"));
 
     //otp notification
-    $top_data['notification'] = apply_filters('send_notification_jwt_otp', array(
+    $top_data['notification'] = apply_filters('gs_wp_jwt_send_notification', array(
       'mail_send_status' => 0,
       'sms_send_status' => 0
     ), $user_id, $OTP, $mobile );
@@ -240,7 +240,7 @@ function gs_wp_jwt_otp_endpoint_handler($request = null){
 * Default mail_send_status = 0, sms_send_status = 0
 */
 /*
-function send_notification_jwt_otp_fun( $data, $user_id, $OTP, $mobile ) {
+function gs_wp_jwt_send_notification_fun( $data, $user_id, $OTP, $mobile ) {
 
   //Write mail send code here
   $from = get_option('admin_email');
@@ -266,7 +266,7 @@ function send_notification_jwt_otp_fun( $data, $user_id, $OTP, $mobile ) {
 
   return $data;
 }
-add_filter( 'send_notification_jwt_otp', 'send_notification_jwt_otp_fun', 10, 4 );
+add_filter( 'gs_wp_jwt_send_notification', 'gs_wp_jwt_send_notification_fun', 10, 4 );
 */
 
 
@@ -441,7 +441,7 @@ function gs_wp_jwt_validate_jwt_token($output = true){
 /*
 * middleware check http request authorization
 */
-function middleware_determine_current_user( $user ) {
+function gs_wp_jwt_middleware_determine_current_user( $user ) {
 
   global $wp_json_basic_auth_error;
 
@@ -489,4 +489,4 @@ function middleware_determine_current_user( $user ) {
   return $token->data->user->id;
 
 }
-add_filter( 'determine_current_user', 'middleware_determine_current_user', 20 );
+add_filter( 'determine_current_user', 'gs_wp_jwt_middleware_determine_current_user', 20 );
