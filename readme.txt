@@ -11,7 +11,7 @@ License URI: http://www.gnu.org/licenses/gpl-2.0.html
 
 == Description ==
 
-Extends the WP REST API using JSON Web Tokens Authentication as an authentication method.
+Extends the WP REST API using JSON Web Tokens as an authentication method.
 GS JWT plugin provides to encode and decode JSON Web Tokens (JWT), conforming to RFC 7519.
 
 GET OTP and send notification by mail or SMS service 
@@ -30,20 +30,16 @@ Most of the shared hosting has disabled the **HTTP Authorization Header** by def
 
 To enable this option you'll need to edit your **.htaccess** file adding the following
 
-`
-RewriteEngine on
-RewriteCond %{HTTP:Authorization} ^(.*)
-RewriteRule ^(.*) - [E=HTTP_AUTHORIZATION:%1]
-`
+	RewriteEngine on
+	RewriteCond %{HTTP:Authorization} ^(.*)
+	RewriteRule ^(.*) - [E=HTTP_AUTHORIZATION:%1]
 
 #### WPENGINE
 
 To enable this option you'll need to edit your **.htaccess** file adding the following
 
 
-`
-SetEnvIf Authorization "(.*)" HTTP_AUTHORIZATION=$1
-`
+	SetEnvIf Authorization "(.*)" HTTP_AUTHORIZATION=$1
 
 
 #### CONFIGURATION
@@ -86,6 +82,25 @@ Endpoint | HTTP Verb
 		"username": "enter username",
 		"password": "enter password"
 	}
+#### Reponse
+	{
+	    "data": {
+	        "id": "1",
+	        "user_login": "admin",
+	        "user_pass": null,
+	        "user_nicename": "admin",
+	        "user_email": "example@gmail.com",
+	        "user_url": "",
+	        "user_registered": "2020-08-11 07:35:37",
+	        "user_activation_key": "",
+	        "user_status": "0",
+	        "display_name": "admin",
+	        "roles": [
+	            "administrator"
+	        ],
+	        "token": "eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJpc3MiOiJodHRwOlwvXC8xMjcuMC4wLjFcL3dvcmRwcmVzcyIsImlhdCI6MTY0MTYyMzM2NiwibmJmIjoxNjQxNjIzMzY2LCJleHAiOjE2NDE2MjY5NjYsImRhdGEiOnsidXNlciI6eyJpZCI6IjEiLCJ1c2VyX2xvZ2luIjoiYWRtaW4iLCJ1c2VyX3Bhc3MiOm51bGwsInVzZXJfbmljZW5hbWUiOiJhZG1pbiIsInVzZXJfZW1haWwiOiJnYXVyYXZpbjIxM0BnbWFpbC5jb20iLCJ1c2VyX3VybCI6IiIsInVzZXJfcmVnaXN0ZXJlZCI6IjIwMjAtMDgtMTEgMDc6MzU6MzciLCJ1c2VyX2FjdGl2YXRpb25fa2V5IjoiIiwidXNlcl9zdGF0dXMiOiIwIiwiZGlzcGxheV9uYW1lIjoiYWRtaW4iLCJyb2xlcyI6WyJhZG1pbmlzdHJhdG9yIl19fX0.V-IsDSaURDSxkOMYV0HOSSuIjfQVqQfvQBT5JSy9iCQ"
+	    }
+	}
 
 2. Get otp by billing mobile number
 #### Request method:
@@ -94,6 +109,20 @@ Endpoint | HTTP Verb
 	Body{
 		"mobile": "enter mobile number"
 	}
+#### Reponse
+	{
+	    "data": {
+	        "otp": 249225,
+	        "message": "SUCCESS",
+	        "otp_use_staus": "0",
+	        "notification": {
+	            "mail_send_status": 0,
+	            "sms_send_status": 0
+	        }
+	    }
+	}
+	
+
 3. Verify otp and mobile number to login 
 #### Request method:
 	POST /wp-json/gs-jwt/v1/verify-otp
@@ -102,8 +131,28 @@ Endpoint | HTTP Verb
 		"otp": "enter otp",
 		"mobile": "enter mobile number"
 	}
+#### Reponse
+	{
+	    "data": {
+	        "id": "1",
+	        "user_login": "admin",
+	        "user_pass": null,
+	        "user_nicename": "admin",
+	        "user_email": "example@gmail.com",
+	        "user_url": "",
+	        "user_registered": "2020-08-11 07:35:37",
+	        "user_activation_key": "",
+	        "user_status": "0",
+	        "display_name": "admin",
+	        "roles": [
+	            "administrator"
+	        ],
+	        "token": "eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJpc3MiOiJodHRwOlwvXC8xMjcuMC4wLjFcL3dvcmRwcmVzcyIsImlhdCI6MTY0MTYyMzM2NiwibmJmIjoxNjQxNjIzMzY2LCJleHAiOjE2NDE2MjY5NjYsImRhdGEiOnsidXNlciI6eyJpZCI6IjEiLCJ1c2VyX2xvZ2luIjoiYWRtaW4iLCJ1c2VyX3Bhc3MiOm51bGwsInVzZXJfbmljZW5hbWUiOiJhZG1pbiIsInVzZXJfZW1haWwiOiJnYXVyYXZpbjIxM0BnbWFpbC5jb20iLCJ1c2VyX3VybCI6IiIsInVzZXJfcmVnaXN0ZXJlZCI6IjIwMjAtMDgtMTEgMDc6MzU6MzciLCJ1c2VyX2FjdGl2YXRpb25fa2V5IjoiIiwidXNlcl9zdGF0dXMiOiIwIiwiZGlzcGxheV9uYW1lIjoiYWRtaW4iLCJyb2xlcyI6WyJhZG1pbmlzdHJhdG9yIl19fX0.V-IsDSaURDSxkOMYV0HOSSuIjfQVqQfvQBT5JSy9iCQ"
+	    }
+	}
+	
 
-####Sample add SMS and email notification
+#### Sample add SMS and email notification
 	
 	/*
 	* Send notification 

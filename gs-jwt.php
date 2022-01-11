@@ -285,7 +285,7 @@ function gs_wp_jwt_otp_verify_endpoint_handler($request = null){
   $meta_value = $OTP;
 
   $q = "
-  SELECT t1.user_id, t1.meta_value as mobile FROM wp_usermeta as t1 INNER JOIN wp_usermeta as t2 ON t1.user_id = t2.user_id 
+  SELECT t1.user_id, t1.meta_value as mobile FROM {$wpdb->prefix}usermeta as t1 INNER JOIN {$wpdb->prefix}usermeta as t2 ON t1.user_id = t2.user_id 
   WHERE 
   t1.meta_key = '_gs_jwt_fs_otp' AND t1.meta_value = '{$OTP}' AND 
   t2.meta_key = 'billing_phone' AND t2.meta_value = '{$mobile}'
