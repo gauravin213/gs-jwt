@@ -72,6 +72,17 @@ function gs_wp_jwt_endpoints($request) {
   ));
 
   /*
+  * Login endpoint
+  */
+  register_rest_route('gs-jwt/v1', 'token/validate', array(
+    'methods' => 'POST',
+    'callback' => 'gs_wp_jwt_validate_jwt_token',
+    'permission_callback' => function($request){    
+      return true;
+    }
+  ));
+
+  /*
   * OTP Login endpoint
   */
   register_rest_route('gs-jwt/v1', 'get-otp', array(
@@ -94,9 +105,20 @@ function gs_wp_jwt_endpoints($request) {
   ));
 
   /*
+  * Register endpoint
+  */
+  register_rest_route('gs-jwt/v1', 'register', array(
+    'methods' => 'POST',
+    'callback' => 'gs_wp_jwt_register_endpoint_handler',
+    'permission_callback' => function($request){    
+      return true;
+    }
+  ));
+
+  /*
   * Tes endpoint
   */
-  register_rest_route('mytest/v1', 'login_test', array(
+  register_rest_route('gs-jwt/v1', 'login_test', array(
     'methods' => 'GET',
     'callback' => 'gs_wp_jwt_test_endpoint_handler',
     'permission_callback' => function($request){    
@@ -107,14 +129,124 @@ function gs_wp_jwt_endpoints($request) {
 
 }
 
+/*
+* Register user 
+*/
+function gs_wp_jwt_register_endpoint_handler($request = null){
 
-function gs_wp_jwt_test_endpoint_handler(){
+  $response = array();
 
-  $response = array(123);
+  $username = sanitize_text_field($request['username']);
+  $password = sanitize_text_field($request['password']);
+  $email = sanitize_text_field($request['email']);
+  $mobile = sanitize_text_field($request['mobile']);
+
+  //$error = new WP_Error();
+  //$error->add(406, __("Username already exist.", 'wp-rest-user'), array('status' => 406));
+  //return $error;
+
+  //Validate
+  if ($username == ''){
+    $response['message'] = 'Please enter username';
+    $response['code'] = 200;
+    $response['data'] = array('status' => 200);
+    return new WP_REST_Response($response);
+  }
+
+  if ($password == ''){
+    $response['message'] = 'Please enter password';
+    $response['code'] = 200;
+    $response['data'] = array('status' => 200);
+    return new WP_REST_Response($response);
+  }
+
+  if ($email == ''){
+    $response['message'] = 'Please enter email';
+    $response['code'] = 200;
+    $response['data'] = array('status' => 200);
+    return new WP_REST_Response($response);
+  }
+
+  if ($mobile == ''){
+    $response['message'] = 'Please enter mobile';
+    $response['code'] = 200;
+    $response['data'] = array('status' => 200);
+    return new WP_REST_Response($response);
+  }
+
+  //If already exist
+  if ( username_exists( $username ) ){
+    $response['message'] = 'Username already exist';
+    $response['code'] = 406;
+    $response['data'] = array('status' => 406);
+    return new WP_REST_Response($response);
+  }
+
+  if ( email_exists( $email) ){
+    $response['message'] = 'Email address already exist';
+    $response['code'] = 406;
+    $response['data'] = array('status' => 406);
+    return new WP_REST_Response($response);
+  }
+
+  global $wpdb;
+  $meta_key = 'billing_phone';
+  $meta_value = $mobile;
+  $q = "
+    SELECT user_id, meta_value as mobile FROM {$wpdb->prefix}usermeta 
+    WHERE meta_key = '{$meta_key}' AND meta_value = '{$meta_value}'
+  ";
+  $if_exist_mobile = $wpdb->get_results($q);
+  if (count($if_exist_mobile)!=0) {
+    $response['message'] = 'Mobile number already exist';
+    $response['code'] = 406;
+    $response['data'] = array('status' => 406);
+    return new WP_REST_Response($response);
+  }
+
+  //create new user
+  if ( !username_exists( $username ) && !email_exists( $email ) ) {
+
+    $user_id = wp_create_user( $username, $password, $email );
+    $user = new WP_User( $user_id );
+    $user->set_role( 'customer' );
+    update_user_meta($user_id, 'billing_phone', $mobile);
+
+    $user = get_userdata($user_id);
+    unset($user->user_pass);
+    $billing_phone = get_user_meta($user_id, 'billing_phone', true);
+    $user_data = array(
+      'id' => $user_id,
+      'user_login' => $user->data->user_login,
+      'user_pass' => $user->data->user_pass,
+      'user_nicename' => $user->data->user_nicename,
+      'user_email' => $user->data->user_email,
+      'user_url' => $user->data->user_url,
+      'user_registered' => $user->data->user_registered,
+      'user_activation_key' => $user->data->user_activation_key,
+      'user_status' => $user->data->user_status,
+      'display_name' => $user->data->display_name,
+      'roles' => $user->roles,
+      'billing_phone' => $billing_phone
+    );
+    $response['data'] = $user_data;
+    $response['code'] = 200;
+    $response['message'] = 'Registration was Successful';
+
+  }
 
   return new WP_REST_Response($response);
 
 }
+
+/*
+* Test endpoint
+*/
+function gs_wp_jwt_test_endpoint_handler(){
+  $response = array(123);
+  return new WP_REST_Response($response);
+}
+
 
 /*
 * Encode jwt user data
@@ -147,7 +279,9 @@ function gs_wp_jwt_encode_token($user_id){
 	  'nbf'  => $not_before,
 	  'exp'  => $expire,
 	  'data' => array(
-	      'user' => $user_data,
+      'user' => array(
+        'id' => $user->data->ID
+      ),
 	  ),
 	);
 	// Let the user modify the token data before the sign.
@@ -240,7 +374,7 @@ function gs_wp_jwt_otp_endpoint_handler($request = null){
 * Default mail_send_status = 0, sms_send_status = 0
 */
 /*
-function gs_wp_jwt_send_notification_fun( $data, $user_id, $OTP, $mobile ) {
+function gs_wp_jwt_send_notification_fun( $data, $user_id, $otp, $mobile ) {
 
   //Write mail send code here
   $from = get_option('admin_email');

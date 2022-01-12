@@ -66,9 +66,13 @@ Endpoint | HTTP Verb
 
 */wp-json/gs-jwt/v1/login* | POST
 
+*/wp-json/gs-jwt/v1/token/validate* | POST
+
 */wp-json/gs-jwt/v1/get-otp* | POST
 
 */wp-json/gs-jwt/v1/verify-otp* | POST
+
+*/wp-json/gs-jwt/v1/register* | POST
 
 
 ### USAGE
@@ -98,11 +102,30 @@ Endpoint | HTTP Verb
 	        "roles": [
 	            "administrator"
 	        ],
-	        "token": "eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJpc3MiOiJodHRwOlwvXC8xMjcuMC4wLjFcL3dvcmRwcmVzcyIsImlhdCI6MTY0MTYyMzM2NiwibmJmIjoxNjQxNjIzMzY2LCJleHAiOjE2NDE2MjY5NjYsImRhdGEiOnsidXNlciI6eyJpZCI6IjEiLCJ1c2VyX2xvZ2luIjoiYWRtaW4iLCJ1c2VyX3Bhc3MiOm51bGwsInVzZXJfbmljZW5hbWUiOiJhZG1pbiIsInVzZXJfZW1haWwiOiJnYXVyYXZpbjIxM0BnbWFpbC5jb20iLCJ1c2VyX3VybCI6IiIsInVzZXJfcmVnaXN0ZXJlZCI6IjIwMjAtMDgtMTEgMDc6MzU6MzciLCJ1c2VyX2FjdGl2YXRpb25fa2V5IjoiIiwidXNlcl9zdGF0dXMiOiIwIiwiZGlzcGxheV9uYW1lIjoiYWRtaW4iLCJyb2xlcyI6WyJhZG1pbmlzdHJhdG9yIl19fX0.V-IsDSaURDSxkOMYV0HOSSuIjfQVqQfvQBT5JSy9iCQ"
+	        "token": "eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJpc3MiOiJodHRwOlwvXC8xMjcuMC4wLjFcL3dvcmRwcmVzcyIsImlhdCI6MTY0MTk3MDIwNSwibmJmIjoxNjQxOTcwMjA1LCJleHAiOjE2NDE5NzM4MDUsImRhdGEiOnsidXNlciI6eyJpZCI6IjEifX19.gRF_aNsmhQ8kqXYdKbm6dIA7zTlhcCU-e_cpP9pQDyM"
 	    }
 	}
 
-2. Get otp by billing mobile number
+
+
+2. Validate JSON web token
+
+#### Request method:
+	POST /wp-json/gs-jwt/v1/token/validate
+
+	Make a POST request sending the Authorization header
+	Authorization: Bearer eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJpc3MiOiJodHRwOlwvXC8xMjcuMC4wLjFcL3dvcmRwcmVzcyIsImlhdCI6MTY0MTk3MDIwNSwibmJmIjoxNjQxOTcwMjA1LCJleHAiOjE2NDE5NzM4MDUsImRhdGEiOnsidXNlciI6eyJpZCI6IjEifX19.gRF_aNsmhQ8kqXYdKbm6dIA7zTlhcCU-e_cpP9pQDyM
+#### Reponse
+	{
+	    "code": "jwt_auth_valid_token",
+	    "data": {
+	        "status": 200
+	    }
+	}
+
+
+
+3. Get otp by billing mobile number
 #### Request method:
 	POST /wp-json/gs-jwt/v1/get-otp
 
@@ -123,7 +146,7 @@ Endpoint | HTTP Verb
 	}
 	
 
-3. Verify otp and mobile number to login 
+4. Verify otp and mobile number to login 
 #### Request method:
 	POST /wp-json/gs-jwt/v1/verify-otp
 
@@ -147,8 +170,42 @@ Endpoint | HTTP Verb
 	        "roles": [
 	            "administrator"
 	        ],
-	        "token": "eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJpc3MiOiJodHRwOlwvXC8xMjcuMC4wLjFcL3dvcmRwcmVzcyIsImlhdCI6MTY0MTYyMzM2NiwibmJmIjoxNjQxNjIzMzY2LCJleHAiOjE2NDE2MjY5NjYsImRhdGEiOnsidXNlciI6eyJpZCI6IjEiLCJ1c2VyX2xvZ2luIjoiYWRtaW4iLCJ1c2VyX3Bhc3MiOm51bGwsInVzZXJfbmljZW5hbWUiOiJhZG1pbiIsInVzZXJfZW1haWwiOiJnYXVyYXZpbjIxM0BnbWFpbC5jb20iLCJ1c2VyX3VybCI6IiIsInVzZXJfcmVnaXN0ZXJlZCI6IjIwMjAtMDgtMTEgMDc6MzU6MzciLCJ1c2VyX2FjdGl2YXRpb25fa2V5IjoiIiwidXNlcl9zdGF0dXMiOiIwIiwiZGlzcGxheV9uYW1lIjoiYWRtaW4iLCJyb2xlcyI6WyJhZG1pbmlzdHJhdG9yIl19fX0.V-IsDSaURDSxkOMYV0HOSSuIjfQVqQfvQBT5JSy9iCQ"
+	        "token": "eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJpc3MiOiJodHRwOlwvXC8xMjcuMC4wLjFcL3dvcmRwcmVzcyIsImlhdCI6MTY0MTk3MDIwNSwibmJmIjoxNjQxOTcwMjA1LCJleHAiOjE2NDE5NzM4MDUsImRhdGEiOnsidXNlciI6eyJpZCI6IjEifX19.gRF_aNsmhQ8kqXYdKbm6dIA7zTlhcCU-e_cpP9pQDyM"
 	    }
+	}
+
+
+
+5. Register user
+#### Request method:
+	POST /wp-json/gs-jwt/v1/register
+
+	Body{
+	    "username": "example",
+	    "password": "example@123",
+	    "email": "example@gmail.com",
+	    "mobile": "1122336699"
+	}
+#### Reponse
+	{
+	    "data": {
+	        "id": 29,
+	        "user_login": "example",
+	        "user_pass": null,
+	        "user_nicename": "example",
+	        "user_email": "example@gmail.com",
+	        "user_url": "",
+	        "user_registered": "2022-01-12 07:45:29",
+	        "user_activation_key": "",
+	        "user_status": "0",
+	        "display_name": "example",
+	        "roles": [
+	            "customer"
+	        ],
+	        "billing_phone": "1122336699"
+	    },
+	    "code": 200,
+	    "message": "Registration was Successful"
 	}
 	
 
@@ -158,7 +215,7 @@ Endpoint | HTTP Verb
 	* Send notification 
 	* Default mail_send_status = 0, sms_send_status = 0
 	*/
-	function gs_wp_jwt_send_notification_fun( $data, $user_id, $OTP, $mobile ) {
+	function gs_wp_jwt_send_notification_fun( $data, $user_id, $otp, $mobile ) {
 
 	  //Write mail send code here
 	  $from = get_option('admin_email');
@@ -185,3 +242,11 @@ Endpoint | HTTP Verb
 	  return $data;
 	}
 	add_filter( 'gs_wp_jwt_send_notification', 'gs_wp_jwt_send_notification_fun', 10, 4 );
+
+
+
+== Changelog ==
+= 1.0.0 =
+* jwt jsonwebtoken encoding user_id.
+* added new endpint validate token.
+* added new endpint register user.

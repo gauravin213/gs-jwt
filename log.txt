@@ -1,0 +1,3 @@
+----jwt token encode only user_id----
+----added new endpint validate token----
+----added new endpint register user----
