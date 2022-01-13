@@ -72,7 +72,9 @@ Endpoint | HTTP Verb
 
 */wp-json/gs-jwt/v1/verify-otp* | POST
 
-*/wp-json/gs-jwt/v1/register* | POST
+*/wp-json/gs-jwt/v1/register_user* | POST
+
+*/wp-json/gs-jwt/v1/register_userbymobile* | POST
 
 
 ### USAGE
@@ -178,7 +180,7 @@ Endpoint | HTTP Verb
 
 5. Register user
 #### Request method:
-	POST /wp-json/gs-jwt/v1/register
+	POST /wp-json/gs-jwt/v1/register_user
 
 	Body{
 	    "username": "example",
@@ -203,6 +205,30 @@ Endpoint | HTTP Verb
 	            "customer"
 	        ],
 	        "billing_phone": "1122336699"
+	    },
+	    "code": 200,
+	    "message": "Registration was Successful"
+	}
+
+6. Register user by mobile number
+#### Request method:
+	POST /wp-json/gs-jwt/v1/register_userbymobile
+
+	Body{
+	    "mobile": "1122336699"
+	}
+#### Reponse
+	{
+	    "data": {
+	        "id": 32,
+	        "user_login": "1144556638",
+	        "user_nicename": "1144556638",
+	        "user_registered": "2022-01-13 06:29:30",
+	        "display_name": "1144556638",
+	        "roles": [
+	            "customer"
+	        ],
+	        "billing_phone": "1144556638"
 	    },
 	    "code": 200,
 	    "message": "Registration was Successful"
@@ -250,3 +276,6 @@ Endpoint | HTTP Verb
 * jwt jsonwebtoken encoding user_id.
 * added new endpint validate token.
 * added new endpint register user.
+
+= 1.2.0 =
+* added new endpint register_userbymobile.

@@ -107,9 +107,20 @@ function gs_wp_jwt_endpoints($request) {
   /*
   * Register endpoint
   */
-  register_rest_route('gs-jwt/v1', 'register', array(
+  register_rest_route('gs-jwt/v1', 'register_user', array(
     'methods' => 'POST',
     'callback' => 'gs_wp_jwt_register_endpoint_handler',
+    'permission_callback' => function($request){    
+      return true;
+    }
+  ));
+
+  /*
+  * Register endpoint
+  */
+  register_rest_route('gs-jwt/v1', 'register_userbymobile', array(
+    'methods' => 'POST',
+    'callback' => 'gs_wp_jwt_register_userbymobile_endpoint_handler',
     'permission_callback' => function($request){    
       return true;
     }
@@ -130,7 +141,68 @@ function gs_wp_jwt_endpoints($request) {
 }
 
 /*
-* Register user 
+* Register user by mobile number
+*/
+function gs_wp_jwt_register_userbymobile_endpoint_handler($request = null){
+
+  $response = array();
+
+  $mobile = sanitize_text_field($request['mobile']);
+
+  //Validate
+  if ($mobile == ''){
+    $response['message'] = 'Please enter mobile';
+    $response['code'] = 200;
+    $response['data'] = array('status' => 200);
+    return new WP_REST_Response($response);
+  }
+
+  //If already exist
+  global $wpdb;
+  $meta_key = 'billing_phone';
+  $meta_value = $mobile;
+  $q = "
+    SELECT user_id, meta_value as mobile FROM {$wpdb->prefix}usermeta 
+    WHERE meta_key = '{$meta_key}' AND meta_value = '{$meta_value}'
+  ";
+  $if_exist_mobile = $wpdb->get_results($q);
+  if (count($if_exist_mobile)!=0) {
+    $response['message'] = 'Mobile number already exist';
+    $response['code'] = 406;
+    $response['data'] = array('status' => 406);
+    return new WP_REST_Response($response);
+  }
+
+  //create new user
+  $password = wp_generate_password( 12, true, false );
+  $user_id = wp_create_user( $mobile, $password);
+  $user = new WP_User( $user_id );
+  $user->set_role( 'customer' );
+  update_user_meta($user_id, 'billing_phone', $mobile);
+
+  $user = get_userdata($user_id);
+  unset($user->user_pass);
+  $billing_phone = get_user_meta($user_id, 'billing_phone', true);
+  $user_data = array(
+    'id' => $user_id,
+    'user_login' => $user->data->user_login,
+    'user_nicename' => $user->data->user_nicename,
+    'user_registered' => $user->data->user_registered,
+    'display_name' => $user->data->display_name,
+    'roles' => $user->roles,
+    'billing_phone' => $billing_phone
+  );
+  $response['data'] = $user_data;
+  $response['code'] = 200;
+  $response['message'] = 'Registration was Successful';
+
+  return new WP_REST_Response($response);
+
+}
+
+
+/*
+* Register user by mobile number
 */
 function gs_wp_jwt_register_endpoint_handler($request = null){
 
